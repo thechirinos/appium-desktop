@@ -57,19 +57,19 @@ function getBaseHTMLPath () {
 
 function bindDevTools (win) {
   // If it's dev, go ahead and open up the dev tools automatically
-  if (isDev) {
-    win.openDevTools();
-  }
-  win.webContents.on('context-menu', (e, props) => {
-    const {x, y} = props;
+  // if (isDev) {
+  //   win.openDevTools();
+  // }
+  // win.webContents.on('context-menu', (e, props) => {
+  //   const {x, y} = props;
 
-    Menu.buildFromTemplate([{
-      label: 'Inspect element',
-      click () {
-        win.inspectElement(x, y);
-      }
-    }]).popup(win);
-  });
+  //   Menu.buildFromTemplate([{
+  //     label: 'Inspect element',
+  //     click () {
+  //       win.inspectElement(x, y);
+  //     }
+  //   }]).popup(win);
+  // });
 }
 
 function bindSessionKillOnClose (win) {
@@ -198,7 +198,7 @@ export function createNewSessionWindow (win) {
     frame: "customButtonsOnHover",
     titleBarStyle: 'hidden',
     webPreferences: {
-      devTools: true
+      devTools: false
     }
   });
   let sessionHTMLPath = `${getBaseHTMLPath()}#/session`;
