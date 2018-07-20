@@ -4,8 +4,8 @@ import wd from 'wd';
 const isDevelopment = process.env.NODE_ENV === 'development';
 
 const KEEP_ALIVE_PING_INTERVAL = 5 * 1000;
-const NO_NEW_COMMAND_LIMIT = isDevelopment ?  30 * 1000 :  5 * 60 * 1000;
-const WAIT_FOR_USER_KEEP_ALIVE = 30 * 1000;
+const NO_NEW_COMMAND_LIMIT = isDevelopment ?  30 * 60 * 1000 :  5 * 60 * 1000;
+const WAIT_FOR_USER_KEEP_ALIVE = 30 * 60 * 1000;
 
 export default class AppiumMethodHandler {
   constructor (driver, sender) {
