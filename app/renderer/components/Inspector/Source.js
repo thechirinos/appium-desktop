@@ -19,7 +19,7 @@ export default class Source extends Component {
 
   getFormattedTag (el) {
     const {tagName, xpath, attributes} = el;
-    let regex = /("[A-Za-z0-9 ]+")/;
+    let regex = /("[A-Za-z0-9 &]+")/;
     let nodeName = "";
     let array = regex.exec(xpath);
     if (array && array.length > 0 && xpath.length >= 2
