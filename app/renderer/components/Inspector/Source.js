@@ -18,8 +18,17 @@ const IMPORTANT_ATTRS = [
 export default class Source extends Component {
 
   getFormattedTag (el) {
-    const {tagName, attributes} = el;
+    const {tagName, xpath, attributes} = el;
+    let regex = /("[A-Za-z0-9 &]+")/;
+    let nodeName = "";
+    let array = regex.exec(xpath);
+    if (array && array.length > 0 && xpath.length >= 2
+      && xpath.charAt(xpath.length - 1) == ']'
+      && xpath.charAt(xpath.length - 2) == '\"') {
+      nodeName = ", node name: " + array[0];
+    }
     let attrs = [];
+
     for (let attr of IMPORTANT_ATTRS) {
       if (attributes[attr]) {
         attrs.push(<span key={attr}>&nbsp;
@@ -32,7 +41,7 @@ export default class Source extends Component {
       }
     }
     return <span>
-      &lt;<b className={InspectorStyles.sourceTag}>{tagName}</b>{attrs}&gt;
+    &lt;<b className={InspectorStyles.sourceTag}>{tagName + nodeName}</b>{attrs}&gt;
     </span>;
   }i
 
