@@ -1,5 +1,7 @@
 import Framework from './framework';
 
+var node_name = "";
+
 class JsWdIoFramework extends Framework {
 
   get language () {
@@ -10,7 +12,6 @@ class JsWdIoFramework extends Framework {
     return code
       .replace(/let .+ = /g, '')
       .replace(/(\n|^)(driver|el.+)\./g, '\n.')
-      .replace(/;\n/g, '\n');
   }
 
   wrapWithBoilerplate (code) {
@@ -18,25 +19,20 @@ class JsWdIoFramework extends Framework {
     let caps = JSON.stringify(this.caps);
     let proto = JSON.stringify(this.scheme);
     let path = JSON.stringify(this.path);
-    return `// Requires the webdriverio client library
-// (npm install webdriverio)
-// Then paste this into a .js file and run with Node:
-// node <file>.js
+    return `// Starts at <feature>
 
-const wdio = require('webdriverio');
-const caps = ${caps};
-const driver = wdio.remote({
-  protocol: ${proto},
-  host: ${host},
-  port: ${this.port},
-  path: ${path},
-  desiredCapabilities: caps
-});
-
-driver.init()
+function featureName(d) {
 ${this.indent(this.chainifyCode(code), 2)}
-  .end();
-`;
+
+  return d;
+}
+
+// Ends at <feature>
+
+module.exports = {
+  featureName: featureName,
+};`;
+
   }
 
   codeFor_findAndAssign (strategy, locator, localVar, isArray) {
@@ -52,35 +48,32 @@ ${this.indent(this.chainifyCode(code), 2)}
       case "-ios class chain": locator = `ios=${locator}`; break; // TODO: Handle IOS class chain properly. Not all libs support it. Or take it out
       default: throw new Error(`Can't handle strategy ${strategy}`);
     }
-    if (isArray) {
-      return `let ${localVar} = driver.elements(${JSON.stringify(locator)});`;
-    } else {
-      return `let ${localVar} = driver.element(${JSON.stringify(locator)});`;
-    }
+    node_name = locator;
   }
 
   codeFor_click (varName, varIndex) {
-    return `${this.getVarName(varName, varIndex)}.click();`;
+    return `d = d.click(${JSON.stringify(node_name)});`;
   }
 
   codeFor_clear (varName, varIndex) {
-    return `${this.getVarName(varName, varIndex)}.clearElement();`;
+    return `d = d.clearElement(${JSON.stringify(node_name)});`;
   }
 
   codeFor_sendKeys (varName, varIndex, text) {
-    return `${this.getVarName(varName, varIndex)}.setValue(${JSON.stringify(text)});`;
+    return `d = d.setValue(${JSON.stringify(node_name)}, ${JSON.stringify(text)});`;
   }
 
   codeFor_back () {
-    return `driver.back();`;
+    return `d = d.back();`;
   }
 
   codeFor_tap (varNameIgnore, varIndexIgnore, x, y) {
-    return `driver.touchAction({actions: 'tap', x: ${x}, y: ${y}})`;
+    return `d = d.touchAction({actions: 'tap', x: ${x}, y: ${y}});`;
   }
 
   codeFor_swipe (varNameIgnore, varIndexIgnore, x1, y1, x2, y2) {
-    return `driver.touchAction([
+    return `// Describe action
+d = d.touchAction([
   {action: 'press', x: ${x1}, y: ${y1}},
   {action: 'moveTo', x: ${x2}, y: ${y2}},
   'release'
